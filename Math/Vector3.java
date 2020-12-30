@@ -76,9 +76,11 @@ public class Vector3 {
 	 */
 	public static Vector4 axisAngle(Vector3 A, Vector3 B) {
 		float Angle;
-		Vector3 Axis;
-		Angle = Vector3.dot(A, B);
-		Axis = Vector3.cross(A, B);
+		Vector3 Axis, NormA, NormB;
+		NormA = Vector3.normalize(A);
+		NormB = Vector3.normalize(B);
+		Angle = (float) Math.acos(Vector3.dot(NormA, NormB));
+		Axis = Vector3.cross(NormA, NormB);
 		return new Vector4(Axis, Angle);
 	}
 	
