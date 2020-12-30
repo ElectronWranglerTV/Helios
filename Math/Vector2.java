@@ -209,6 +209,10 @@ public class Vector2 {
 		return Vector2.angle(this, Vector);
 	}
 	
+	public void copy(Vector2 Vector) {
+		Vector.set(this.X, this.Y);
+	}
+	
 	/**
 	 * Computes the dot product between this vector and another vector, returning
 	 * the result as a float
@@ -225,6 +229,14 @@ public class Vector2 {
 	 */
 	public float length() {
 		return Vector2.length(this);
+	}
+	
+	/**
+	 * Returns a string containing the vector's contents
+	 * Format: "(X, Y)"
+	 */
+	public String toString() {
+		return "(" + this.X + ", " + this.Y + ")";
 	}
 	
 	public float x() {
