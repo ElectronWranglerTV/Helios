@@ -1,4 +1,4 @@
-/* Helios (TM) 3D Engine (Java): 3D Vector Class
+/* Helios (TM) 3D Engine (Java): 4D Vector Class
 * Copyright (C) DeRemee Systems, IXE Electronics LLC
 * Portions copyright IXE Electronics LLC, Republic Robotics, FemtoLaunch, FemtoSat, FemtoTrack, Weland
 * This work is made available under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
@@ -7,50 +7,52 @@
 
 package Math;
 
-public class Vector3 {
+public class Vector4 {
+	private float W;
 	private float X;
 	private float Y;
 	private float Z;
 	
-	public Vector3() {
+	public Vector4() {
+		this.W = 0.0f;
 		this.X = 0.0f;
 		this.Y = 0.0f;
 		this.Z = 0.0f;
 	}
 	
-	public Vector3(float X, float Y, float Z) {
+	public Vector4(float X, float Y, float Z, float W) {
+		this.W = W;
 		this.X = X;
 		this.Y = Y;
 		this.Z = Z;
 	}
 	
-	public Vector3(Vector3 Vector) {
+	public Vector4(Vector4 Vector) {
+		this.W = Vector.w();
 		this.X = Vector.x();
 		this.Y = Vector.y();
 		this.Z = Vector.z();
 	}
 	
+	public Vector4(Vector3 Vector, float W) {
+		this.W = W;
+		this.X = Vector.x();
+		this.Y = Vector.y();
+		this.Z = Vector.z();
+	}
+	
+	public Vector4(Vector2 Vector, float Z, float W) {
+		this.W = W;
+		this.X = Vector.x();
+		this.Y = Vector.y();
+		this.Z = Z;
+	}
+	
 	/*
 	 * STATIC METHODS
 	 * All computation is performed using these methods, and they all return
-	 * a the result in a new Vector3 or float object.
+	 * a the result in a new Vector4 or float object.
 	 */
-	
-	/**
-	 * Adds the XY values to the vector, returning the result in a new vector
-	 * @param Vector the vector
-	 * @param X a float
-	 * @param Y a float
-	 * @param Z a float
-	 * @return a new vector
-	 */
-	public static Vector3 add(Vector3 Vector, float X, float Y, float Z) {
-		float NX, NY, NZ;
-		NX = Vector.x() + X;
-		NY = Vector.y() + Y;
-		NZ = Vector.z() + Z;
-		return new Vector3(NX, NY, NZ);
-	}
 	
 	/**
 	 * Adds the "right side" vector to the "left side" vector, returning the 
@@ -59,44 +61,13 @@ public class Vector3 {
 	 * @param B right-side vector
 	 * @return a new vector
 	 */
-	public static Vector3 add(Vector3 A, Vector3 B) {
-		float X, Y, Z;
+	public static Vector4 add(Vector4 A, Vector4 B) {
+		float W, X, Y, Z;
+		W = A.w() + B.w();
 		X = A.x() + B.x();
 		Y = A.y() + B.y();
 		Z = A.z() + B.z();
-		return new Vector3(X, Y, Z);
-	}
-	
-	/**
-	 * Calculates the axis-angle between two vectors, returning the result as a
-	 * new vector4
-	 * @param A the "left side" vector
-	 * @param B the "right side" vector
-	 * @return a new vector representing the axis-angle
-	 */
-	public static Vector4 axisAngle(Vector3 A, Vector3 B) {
-		float Angle;
-		Vector3 Axis, NormA, NormB;
-		NormA = Vector3.normalize(A);
-		NormB = Vector3.normalize(B);
-		Angle = (float) Math.acos(Vector3.dot(NormA, NormB));
-		Axis = Vector3.cross(NormA, NormB);
-		return new Vector4(Axis, Angle);
-	}
-	
-	/**
-	 * Calculates the cross product between two vectors, returning the result
-	 * as a new vector
-	 * @param A the "left side" vector
-	 * @param B the "right side" vector
-	 * @return a new vector representing the cross product
-	 */
-	public static Vector3 cross(Vector3 A, Vector3 B) {
-		float X, Y, Z;
-		X = A.y() * B.z() - A.z() * B.y();
-		Y = A.x() * B.z() - A.z() * B.x();
-		Z = A.x() * B.y() - A.y() * B.x();
-		return new Vector3(X, Y, Z);
+		return new Vector4(X, Y, Z, W);
 	}
 	
 	/**
@@ -105,12 +76,12 @@ public class Vector3 {
 	 * @param B the "right side" vector
 	 * @return a new float representing the dot product
 	 */
-	public static float dot(Vector3 A, Vector3 B) {
-		return A.x() * B.x() + A.y() * B.y() + A.z() * B.z();
+	public static float dot(Vector4 A, Vector4 B) {
+		return A.x() * B.x() + A.y() * B.y() + A.z() * B.z() + A.w() * B.w();
 	}
 	
-	public static float length(Vector3 Vector) {
-		return (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y() + Vector.z() * Vector.z());
+	public static float length(Vector4 Vector) {
+		return (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y() + Vector.z() * Vector.z() + Vector.w() * Vector.w());
 	}
 	
 	/**
@@ -118,8 +89,8 @@ public class Vector3 {
 	 * @param Vector a vector
 	 * @return a new vector
 	 */
-	public static Vector3 negate(Vector3 Vector) {
-		return new Vector3(-Vector.x(), -Vector.y(), -Vector.z());
+	public static Vector4 negate(Vector4 Vector) {
+		return new Vector4(-Vector.x(), -Vector.y(), -Vector.z(), -Vector.w());
 	}
 	
 	/**
@@ -127,20 +98,25 @@ public class Vector3 {
 	 * @param Vector a vector
 	 * @return a new vector
 	 */
-	public static Vector3 normalize(Vector3 Vector) {
-		float X, Y, Z;
-		float Length = (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y() + Vector.z() * Vector.z());
+	public static Vector4 normalize(Vector4 Vector) {
+		float W, X, Y, Z;
+		float Length = (float) Math.sqrt(Vector.x() * Vector.x() +
+										 Vector.y() * Vector.y() +
+										 Vector.z() * Vector.z() +
+										 Vector.w() * Vector.w());
 		if(Length != 0.0f) {
 			Length = 1.0f / Length;
+			W = Vector.w() * Length;
 			X = Vector.x() * Length;
 			Y = Vector.y() * Length;
 			Z = Vector.z() * Length;
 		} else {
+			W = 0.0f;
 			X = 0.0f;
 			Y = 0.0f;
 			Z = 0.0f;
 		}
-		return new Vector3(X, Y, Z);
+		return new Vector4(X, Y, Z, W);
 	}
 	
 	/**
@@ -149,12 +125,13 @@ public class Vector3 {
 	 * @param B the "right side" vector representing the XY scale
 	 * @return a new vector
 	 */
-	public static Vector3 scale(Vector3 A, Vector3 B) {
-		float NX, NY, NZ;
+	public static Vector4 scale(Vector4 A, Vector4 B) {
+		float NW, NX, NY, NZ;
+		NW = A.w() * B.w();
 		NX = A.x() * B.x();
 		NY = A.y() * B.y();
 		NZ = A.z() * B.z();
-		return new Vector3(NX, NY, NZ);
+		return new Vector4(NX, NY, NZ, NW);
 	}
 	
 	/**
@@ -164,12 +141,13 @@ public class Vector3 {
 	 * @param B the "right side" vector
 	 * @return a new vector
 	 */
-	public static Vector3 subtract(Vector3 A, Vector3 B) {
-		float X, Y, Z;
+	public static Vector4 subtract(Vector4 A, Vector4 B) {
+		float W, X, Y, Z;
+		W = A.w() - B.w();
 		X = A.x() - B.x();
 		Y = A.y() - B.y();
 		Z = A.z() - B.z();
-		return new Vector3(X, Y, Z);
+		return new Vector4(X, Y, Z, W);
 	}
 	
 	/*
@@ -179,28 +157,8 @@ public class Vector3 {
 	
 	//Accessors
 	
-	/**
-	 * Calcualtes the angle between this vector and another vector, returning
-	 * the result as a float
-	 * @param Vector a vector
-	 * @return a float representing the angle
-	 */
-	public Vector4 axisAngle(Vector3 Vector) {
-		return Vector3.axisAngle(this, Vector);
-	}
-	
-	public void copy(Vector3 Vector) {
-		Vector.set(this.X, this.Y, this.Z);
-	}
-	
-	/**
-	 * Calculates the cross product between this vector and another vector,
-	 * returning the result as a new vector
-	 * @param Vector a vector
-	 * @return a new vector representing the cross product
-	 */
-	public Vector3 cross(Vector3 Vector) {
-		return new Vector3(Vector3.cross(this, Vector));
+	public void copy(Vector4 Vector) {
+		Vector.set(this.X, this.Y, this.Z, this.W);
 	}
 	
 	/**
@@ -209,8 +167,8 @@ public class Vector3 {
 	 * @param Vector a vector
 	 * @return a float representing the dot product
 	 */
-	public float dot(Vector3 Vector) {
-		return Vector3.dot(this, Vector);
+	public float dot(Vector4 Vector) {
+		return Vector4.dot(this, Vector);
 	}
 	
 	/**
@@ -218,7 +176,7 @@ public class Vector3 {
 	 * @return a float representing the length
 	 */
 	public float length() {
-		return Vector3.length(this);
+		return Vector4.length(this);
 	}
 	
 	/**
@@ -226,7 +184,11 @@ public class Vector3 {
 	 * Format: "(X, Y, Z)"
 	 */
 	public String toString() {
-		return "(" + this.X + ", " + this.Y + ", " + this.Z + ")";
+		return "(" + this.X + ", " + this.Y + ", " + this.Z + ", " + this.W + ")";
+	}
+	
+	public float w() {
+		return this.W;
 	}
 	
 	public float x() {
@@ -247,14 +209,15 @@ public class Vector3 {
 	 * Adds another vector to this vector, overwriting the existing values
 	 * @param Vector a vector
 	 */
-	public void add(Vector3 Vector) {
-		this.set(Vector3.add(this, Vector));
+	public void add(Vector4 Vector) {
+		this.set(Vector4.add(this, Vector));
 	}
 	
 	/**
 	 * Sets the vector's components to zero	
 	 */
 	public void clear() {
+		this.W = 0.0f;
 		this.X = 0.0f;
 		this.Y = 0.0f;
 		this.Z = 0.0f;
@@ -264,22 +227,22 @@ public class Vector3 {
 	 * Negates this vector, overwriting the existing values
 	 */
 	public void negate() {
-		this.set(Vector3.negate(this));
+		this.set(Vector4.negate(this));
 	}
 	
 	/**
 	 * Normalizes this vector, overwriting the existing values
 	 */
 	public void normalize() {
-		this.set(Vector3.normalize(this));
+		this.set(Vector4.normalize(this));
 	}
 	
 	/**
 	 * Scales this vector by another vector, overwriting the existing values
 	 * @param Vector a vector representing the XY scale
 	 */
-	public void scale(Vector3 Vector) {
-		this.set(Vector3.scale(this, Vector));
+	public void scale(Vector4 Vector) {
+		this.set(Vector4.scale(this, Vector));
 	}
 	
 	/**
@@ -288,7 +251,8 @@ public class Vector3 {
 	 * @param Y a float representing the Y component
 	 * @param Z a float representing the Z component
 	 */
-	public void set(float X, float Y, float Z) {
+	public void set(float X, float Y, float Z, float W) {
+		this.W = W;
 		this.X = X;
 		this.Y = Y;
 		this.Z = X;
@@ -298,7 +262,8 @@ public class Vector3 {
 	 * Sets new values for the vector
 	 * @param Vector
 	 */
-	public void set(Vector3 Vector) {
+	public void set(Vector4 Vector) {
+		this.W = Vector.w();
 		this.X = Vector.x();
 		this.Y = Vector.y();
 		this.Z = Vector.z();
@@ -308,8 +273,12 @@ public class Vector3 {
 	 * Subtracts a vector from this vector, overwriting the existing values
 	 * @param Vector a vector
 	 */
-	public void subtract(Vector3 Vector) {
-		Vector3.subtract(this, Vector);
+	public void subtract(Vector4 Vector) {
+		Vector4.subtract(this, Vector);
+	}
+	
+	public void w(float W) {
+		this.W = W;
 	}
 	
 	public void x(float X) {
