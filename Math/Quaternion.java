@@ -50,7 +50,7 @@ public class Quaternion {
 	/*
 	 * STATIC METHODS
 	 * All computation is performed using these methods, and they all return
-	 * a the result in a new quaternion object.
+	 * a the result in a new quaternion or float object.
 	 */
 	
 	/**
