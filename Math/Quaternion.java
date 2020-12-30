@@ -1,9 +1,9 @@
-/* Helios (TM) 3D Engine (Java): Quaternion Library
+/* Helios (TM) 3D Engine (Java): Quaternion Class
 * Copyright (C) DeRemee Systems, IXE Electronics LLC
 * Portions copyright IXE Electronics LLC, Republic Robotics, FemtoLaunch, FemtoSat, FemtoTrack, Weland
 * This work is made available under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/.
-/
+*/
 
 package Math;
 
@@ -59,10 +59,11 @@ public class Quaternion {
 	 * @return a new quaternion
 	 */
 	public static Quaternion conjugate(Quaternion A) {
-		float W = A.w();
-		float X = -A.x();
-		float Y = -A.y();
-		float Z = -A.z();
+		float W, X, Y, Z;
+		W =  A.w();
+		X = -A.x();
+		Y = -A.y();
+		Z = -A.z();
 		return new Quaternion(X, Y, Z, W);
 	}
 	
@@ -106,10 +107,35 @@ public class Quaternion {
 	 * @return a new quaternion
 	 */
 	public static Quaternion multiply(Quaternion A, Quaternion B) {
-		float W = A.w() * B.w() - A.x() * B.x() - A.y() * B.y() - A.z() * B.z();
-		float X = A.x() * B.w() + A.w() * B.x() + A.y() * B.z() - A.z() * B.y();
-		float Y = A.y() * B.w() + A.w() * B.y() + A.z() * B.x() - A.x() * B.z();
-		float Z = A.z() * B.w() + A.w() * B.z() + A.x() * B.y() - A.y() * B.x();
+		float W, X, Y, Z;
+		W = A.w() * B.w() - A.x() * B.x() - A.y() * B.y() - A.z() * B.z();
+		X = A.x() * B.w() + A.w() * B.x() + A.y() * B.z() - A.z() * B.y();
+		Y = A.y() * B.w() + A.w() * B.y() + A.z() * B.x() - A.x() * B.z();
+		Z = A.z() * B.w() + A.w() * B.z() + A.x() * B.y() - A.y() * B.x();
+		return new Quaternion(X, Y, Z, W);
+	}
+
+	
+	/**
+	 * Normalizes the quaternion, returning the result as a new quaternion
+	 * @param A a quaternion
+	 * @return a new float;
+	 */
+	public static Quaternion normalize(Quaternion A) {
+		float W, X, Y, Z;
+		float InverseLength = Quaternion.length(A);
+		if(InverseLength != 0) {
+			InverseLength = 1.0f / InverseLength;
+			W = A.w() * InverseLength;
+			X = A.x() * InverseLength;
+			Y = A.y() * InverseLength;
+			Z = A.z() * InverseLength;
+		}else {
+			W = 0.0f;
+			X = 0.0f;
+			Y = 0.0f;
+			Z = 0.0f;
+		}
 		return new Quaternion(X, Y, Z, W);
 	}
 	
@@ -120,25 +146,20 @@ public class Quaternion {
 	 * @return a new quaternion
 	 */
 	public static Quaternion scale(Quaternion A, float Scale) {
-		float W = A.w() * Scale;
-		float X = A.x() * Scale;
-		float Y = A.y() * Scale;
-		float Z = A.z() * Scale;
+		float W, X, Y, Z;
+		W = A.w() * Scale;
+		X = A.x() * Scale;
+		Y = A.y() * Scale;
+		Z = A.z() * Scale;
 		return new Quaternion(X, Y, Z, W);
 	}
 	
 	/**
-	 * Normalizes the quaternion, returning the result as a new quaternion
-	 * @param A a quaternion
-	 * @return a new float;
+	 * Returns a string containing the quaternion's contents
+	 * Format: "(X, Y, Z, W)"
 	 */
-	public static Quaternion normalize(Quaternion A) {
-		float InverseLength = 1 / Quaternion.length(A);
-		float W = A.w() * InverseLength;
-		float X = A.x() * InverseLength;
-		float Y = A.y() * InverseLength;
-		float Z = A.z() * InverseLength;
-		return new Quaternion(X, Y, Z, W);
+	public static String toString(Quaternion A) {
+		return new String("(" + A.x() + ", " + A.y() + ", " + A.z() + ", " + A.w() + ")");
 	}
 	
 	/*
@@ -161,6 +182,14 @@ public class Quaternion {
 	 */
 	public Quaternion copy() {
 		return new Quaternion(this.X, this.Y, this.Z, this.W);
+	}
+	
+	/**
+	 * Returns a string containing the quaternion's contents
+	 * Format: "(X, Y, Z, W)"
+	 */
+	public String toString() {
+		return Quaternion.toString(this);
 	}
 	
 	public float w() {
@@ -187,6 +216,10 @@ public class Quaternion {
 		this.set(Quaternion.conjugate(this));
 	}
 	
+	/**
+	 * Computes the quaternion's length
+	 * @return the length
+	 */
 	public float length() {
 		return Quaternion.length(this);
 	}
@@ -244,8 +277,29 @@ public class Quaternion {
 	}
 	
 	/**
+	 * Sets new values for the quanterion
+	 * @param A a Vector3
+	 */
+	public void set(Vector3 A) {
+		this.X = A.x();
+		this.Y = A.y();
+		this.Z = A.z();
+	}
+	
+	/**
 	 * Sets new values for the quaternion
-	 * @param A
+	 * @param A a Vector4
+	 */
+	public void set(Vector4 A) {
+		this.W = A.w();
+		this.X = A.x();
+		this.Y = A.y();
+		this.Z = A.z();
+	}
+	
+	/**
+	 * Sets new values for the quaternion
+	 * @param A a quaternion
 	 */
 	public void set(Quaternion A) {
 		this.W = A.w();
