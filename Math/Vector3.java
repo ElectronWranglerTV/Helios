@@ -7,29 +7,33 @@
 
 package Math;
 
-public class Vector2 {
+public class Vector3 {
 	private float X;
 	private float Y;
+	private float Z;
 	
-	public Vector2() {
+	public Vector3() {
 		this.X = 0.0f;
 		this.Y = 0.0f;
+		this.Z = 0.0f;
 	}
 	
-	public Vector2(float X, float Y) {
+	public Vector3(float X, float Y, float Z) {
 		this.X = X;
 		this.Y = Y;
+		this.Z = Z;
 	}
 	
-	public Vector2(Vector2 Vector) {
+	public Vector3(Vector3 Vector) {
 		this.X = Vector.x();
 		this.Y = Vector.y();
+		this.Z = Vector.z();
 	}
 	
 	/*
 	 * STATIC METHODS
 	 * All computation is performed using these methods, and they all return
-	 * a the result in a new vector2 or float object.
+	 * a the result in a new Vector3 or float object.
 	 */
 	
 	/**
@@ -37,13 +41,15 @@ public class Vector2 {
 	 * @param Vector the vector
 	 * @param X a float
 	 * @param Y a float
+	 * @param Z a float
 	 * @return a new vector
 	 */
-	public static Vector2 add(Vector2 Vector, float X, float Y) {
-		float NX, NY;
+	public static Vector3 add(Vector3 Vector, float X, float Y, float Z) {
+		float NX, NY, NZ;
 		NX = Vector.x() + X;
 		NY = Vector.y() + Y;
-		return new Vector2(NX, NY);
+		NZ = Vector.z() + Z;
+		return new Vector3(NX, NY, NZ);
 	}
 	
 	/**
@@ -53,46 +59,42 @@ public class Vector2 {
 	 * @param B right-side vector
 	 * @return a new vector
 	 */
-	public static Vector2 add(Vector2 A, Vector2 B) {
-		float X, Y;
+	public static Vector3 add(Vector3 A, Vector3 B) {
+		float X, Y, Z;
 		X = A.x() + B.x();
 		Y = A.y() + B.y();
-		return new Vector2(X, Y);
+		Z = A.z() + B.z();
+		return new Vector3(X, Y, Z);
 	}
 	
 	/**
-	 * Calculates the angle between two vectors, returning the result as a new float
+	 * Calculates the axis-angle between two vectors, returning the result as a
+	 * new vector4
 	 * @param A the "left side" vector
 	 * @param B the "right side" vector
-	 * @return a new float
+	 * @return a new vector representing the axis-angle
 	 */
-	public static float angle(Vector2 A, Vector2 B) {
-		float Angle, Length;
-		Length = A.length() * B.length();
-		if(Length != 0.0f) {
-			Angle = Vector2.dot(A, B) / Length;
-			if(Angle < -1.0f) {
-				Angle = -1.0f;
-			}else if(Angle > 1.0f) {
-				Angle = 1.0f;
-			}
-			Angle = (float) Math.acos(Angle);
-		} else {
-			Angle = 0.0f;
-		}
-		return Angle;
+	public static Vector4 axisAngle(Vector3 A, Vector3 B) {
+		float Angle;
+		Vector3 Axis;
+		Angle = Vector3.dot(A, B);
+		Axis = Vector3.cross(A, B);
+		return new Vector4(Axis, Angle);
 	}
 	
 	/**
-	 * Computes the dot product between a vector and two scalar values, returning
-	 * the result as a float
-	 * @param Vector
-	 * @param X a float
-	 * @param Y a float
-	 * @return a float representing the dot product
+	 * Calculates the cross product between two vectors, returning the result
+	 * as a new vector
+	 * @param A the "left side" vector
+	 * @param B the "right side" vector
+	 * @return a new vector representing the cross product
 	 */
-	public static float dot(Vector2 Vector, float X, float Y) {
-		return Vector.x() * X + Vector.y() * Y;
+	public static Vector3 cross(Vector3 A, Vector3 B) {
+		float X, Y, Z;
+		X = A.y() * B.z() - A.z() * B.y();
+		Y = A.x() * B.z() - A.z() * B.x();
+		Z = A.x() * B.y() - A.y() * B.x();
+		return new Vector3(X, Y, Z);
 	}
 	
 	/**
@@ -101,12 +103,12 @@ public class Vector2 {
 	 * @param B the "right side" vector
 	 * @return a new float representing the dot product
 	 */
-	public static float dot(Vector2 A, Vector2 B) {
-		return A.x() * B.x() + A.y() * B.y();
+	public static float dot(Vector3 A, Vector3 B) {
+		return A.x() * B.x() + A.y() * B.y() + A.z() * B.z();
 	}
 	
-	public static float length(Vector2 Vector) {
-		return (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y());
+	public static float length(Vector3 Vector) {
+		return (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y() + Vector.z() * Vector.z());
 	}
 	
 	/**
@@ -114,8 +116,8 @@ public class Vector2 {
 	 * @param Vector a vector
 	 * @return a new vector
 	 */
-	public static Vector2 negate(Vector2 Vector) {
-		return new Vector2(-Vector.x(), -Vector.y());
+	public static Vector3 negate(Vector3 Vector) {
+		return new Vector3(-Vector.x(), -Vector.y(), -Vector.z());
 	}
 	
 	/**
@@ -123,32 +125,20 @@ public class Vector2 {
 	 * @param Vector a vector
 	 * @return a new vector
 	 */
-	public static Vector2 normalize(Vector2 Vector) {
-		float X, Y;
-		float Length = (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y());
+	public static Vector3 normalize(Vector3 Vector) {
+		float X, Y, Z;
+		float Length = (float) Math.sqrt(Vector.x() * Vector.x() + Vector.y() * Vector.y() + Vector.z() * Vector.z());
 		if(Length != 0.0f) {
 			Length = 1.0f / Length;
 			X = Vector.x() * Length;
 			Y = Vector.y() * Length;
+			Z = Vector.z() * Length;
 		} else {
 			X = 0.0f;
 			Y = 0.0f;
+			Z = 0.0f;
 		}
-		return new Vector2(X, Y);
-	}
-	
-	/**
-	 * Scales the vector by XY, returning the result in a new vector
-	 * @param Vector the vector
-	 * @param X a float representing the X scale
-	 * @param Y a float representing the Y scale
-	 * @return a new vector
-	 */
-	public static Vector2 scale(Vector2 Vector, float X, float Y) {
-		float NX, NY;
-		NX = Vector.x() * X;
-		NY = Vector.y() * Y;
-		return new Vector2(NX, NY);
+		return new Vector3(X, Y, Z);
 	}
 	
 	/**
@@ -157,25 +147,12 @@ public class Vector2 {
 	 * @param B the "right side" vector representing the XY scale
 	 * @return a new vector
 	 */
-	public static Vector2 scale(Vector2 A, Vector2 B) {
-		float NX, NY;
+	public static Vector3 scale(Vector3 A, Vector3 B) {
+		float NX, NY, NZ;
 		NX = A.x() * B.x();
 		NY = A.y() * B.y();
-		return new Vector2(NX, NY);
-	}
-	
-	/**
-	 * subtracts the XY values from the vector, returning the result in a new vector
-	 * @param Vector the vector
-	 * @param X a float
-	 * @param Y a float
-	 * @return a new vector
-	 */
-	public static Vector2 subtract(Vector2 Vector, float X, float Y) {
-		float NX, NY;
-		NX = Vector.x() - X;
-		NY = Vector.y() - Y;
-		return new Vector2(NX, NY);
+		NZ = A.z() * B.z();
+		return new Vector3(NX, NY, NZ);
 	}
 	
 	/**
@@ -185,11 +162,12 @@ public class Vector2 {
 	 * @param B the "right side" vector
 	 * @return a new vector
 	 */
-	public static Vector2 subtract(Vector2 A, Vector2 B) {
-		float X, Y;
+	public static Vector3 subtract(Vector3 A, Vector3 B) {
+		float X, Y, Z;
 		X = A.x() - B.x();
 		Y = A.y() - B.y();
-		return new Vector2(X, Y);
+		Z = A.z() - B.z();
+		return new Vector3(X, Y, Z);
 	}
 	
 	/*
@@ -205,12 +183,22 @@ public class Vector2 {
 	 * @param Vector a vector
 	 * @return a float representing the angle
 	 */
-	public float angle(Vector2 Vector) {
-		return Vector2.angle(this, Vector);
+	public Vector4 axisAngle(Vector3 Vector) {
+		return Vector3.axisAngle(this, Vector);
 	}
 	
-	public void copy(Vector2 Vector) {
-		Vector.set(this.X, this.Y);
+	public void copy(Vector3 Vector) {
+		Vector.set(this.X, this.Y, this.Z);
+	}
+	
+	/**
+	 * Calculates the cross product between this vector and another vector,
+	 * returning the result as a new vector
+	 * @param Vector a vector
+	 * @return a new vector representing the cross product
+	 */
+	public Vector3 cross(Vector3 Vector) {
+		return new Vector3(Vector3.cross(this, Vector));
 	}
 	
 	/**
@@ -219,8 +207,8 @@ public class Vector2 {
 	 * @param Vector a vector
 	 * @return a float representing the dot product
 	 */
-	public float dot(Vector2 Vector) {
-		return Vector2.dot(this, Vector);
+	public float dot(Vector3 Vector) {
+		return Vector3.dot(this, Vector);
 	}
 	
 	/**
@@ -228,15 +216,15 @@ public class Vector2 {
 	 * @return a float representing the length
 	 */
 	public float length() {
-		return Vector2.length(this);
+		return Vector3.length(this);
 	}
 	
 	/**
 	 * Returns a string containing the vector's contents
-	 * Format: "(X, Y)"
+	 * Format: "(X, Y, Z)"
 	 */
 	public String toString() {
-		return "(" + this.X + ", " + this.Y + ")";
+		return "(" + this.X + ", " + this.Y + ", " + this.Z + ")";
 	}
 	
 	public float x() {
@@ -247,23 +235,18 @@ public class Vector2 {
 		return this.Y;
 	}
 	
-	//Mutators
-	
-	/**
-	 * Adds the XY values to this vector, overwriting the existing values
-	 * @param X a float
-	 * @param Y a float
-	 */
-	public void add(float X, float Y) {
-		this.set(Vector2.add(this, X, Y));
+	public float z() {
+		return this.Z;
 	}
+	
+	//Mutators
 	
 	/**
 	 * Adds another vector to this vector, overwriting the existing values
 	 * @param Vector a vector
 	 */
-	public void add(Vector2 Vector) {
-		this.set(Vector2.add(this, Vector));
+	public void add(Vector3 Vector) {
+		this.set(Vector3.add(this, Vector));
 	}
 	
 	/**
@@ -272,72 +255,59 @@ public class Vector2 {
 	public void clear() {
 		this.X = 0.0f;
 		this.Y = 0.0f;
+		this.Z = 0.0f;
 	}
 	
 	/**
 	 * Negates this vector, overwriting the existing values
 	 */
 	public void negate() {
-		this.set(Vector2.negate(this));
+		this.set(Vector3.negate(this));
 	}
 	
 	/**
 	 * Normalizes this vector, overwriting the existing values
 	 */
 	public void normalize() {
-		this.set(Vector2.normalize(this));
-	}
-	
-	/**
-	 * Scales this vector by XY, overwriting the existing values
-	 * @param X a float representing the X scale
-	 * @param Y a float representing the Y scale
-	 */
-	public void scale(float X, float Y) {
-		this.set(Vector2.scale(this, X, Y));
+		this.set(Vector3.normalize(this));
 	}
 	
 	/**
 	 * Scales this vector by another vector, overwriting the existing values
 	 * @param Vector a vector representing the XY scale
 	 */
-	public void scale(Vector2 Vector) {
-		this.set(Vector2.scale(this, Vector));
+	public void scale(Vector3 Vector) {
+		this.set(Vector3.scale(this, Vector));
 	}
 	
 	/**
 	 * Sets new values for the vector
-	 * @param Vector
+	 * @param X a float representing the X component
+	 * @param Y a float representing the Y component
+	 * @param Z a float representing the Z component
 	 */
-	public void set(float X, float Y) {
+	public void set(float X, float Y, float Z) {
 		this.X = X;
 		this.Y = Y;
+		this.Z = X;
 	}
 	
 	/**
 	 * Sets new values for the vector
 	 * @param Vector
 	 */
-	public void set(Vector2 Vector) {
+	public void set(Vector3 Vector) {
 		this.X = Vector.x();
 		this.Y = Vector.y();
-	}
-	
-	/**
-	 * subtracts the XY values from this vector, overwriting the existing values
-	 * @param X a float
-	 * @param Y a float
-	 */
-	public void subtract(float X, float Y) {
-		this.set(Vector2.subtract(this, X, Y));
+		this.Z = Vector.z();
 	}
 	
 	/**
 	 * Subtracts a vector from this vector, overwriting the existing values
 	 * @param Vector a vector
 	 */
-	public void subtract(Vector2 Vector) {
-		Vector2.subtract(this, Vector);
+	public void subtract(Vector3 Vector) {
+		Vector3.subtract(this, Vector);
 	}
 	
 	public void x(float X) {
@@ -346,5 +316,9 @@ public class Vector2 {
 	
 	public void y(float Y) {
 		this.Y = Y;
+	}
+	
+	public void z(float Z) {
+		this.Z = Z;
 	}
 }
